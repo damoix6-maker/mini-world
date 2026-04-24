@@ -23,8 +23,22 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0a0a0f;color:#e0e0e0;ov
 .glass-strong{background:rgba(255,255,255,.06);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1)}
 .btn-primary{background:linear-gradient(135deg,#6c5ce7,#a855f7);transition:all .3s;border:none;cursor:pointer;color:#fff}
 .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(108,92,231,.4)}
+.btn-hint{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:#fbbf24;transition:all .3s;cursor:pointer}
+.btn-hint:hover{background:rgba(245,158,11,.2)}
+.btn-deep{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#f87171;transition:all .3s;cursor:pointer;animation:shake .5s ease}
+.btn-deep:hover{background:rgba(239,68,68,.2)}
+.btn-export{background:linear-gradient(135deg,#10b981,#059669);transition:all .3s;border:none;cursor:pointer;color:#fff}
+.btn-export:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(16,185,129,.4)}
+.btn-import{background:linear-gradient(135deg,#3b82f6,#2563eb);transition:all .3s;border:none;cursor:pointer;color:#fff}
+.btn-import:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(59,130,246,.4)}
+.btn-copy{background:linear-gradient(135deg,#f59e0b,#d97706);transition:all .3s;border:none;cursor:pointer;color:#fff}
+.btn-copy:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(245,158,11,.4)}
+.btn-paste{background:linear-gradient(135deg,#ec4899,#db2777);transition:all .3s;border:none;cursor:pointer;color:#fff}
+.btn-paste:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(236,72,153,.4)}
 .btn-secondary{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);transition:all .3s;cursor:pointer;color:#ccc}
 .btn-secondary:hover{background:rgba(255,255,255,.1)}
+.btn-kb{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);transition:all .3s;cursor:pointer;color:#888;font-size:18px}
+.btn-kb:hover{background:rgba(255,255,255,.1);color:#e0e0e0}
 .card-hover{transition:all .3s;position:relative;overflow:hidden}
 .card-hover:hover{transform:translateY(-4px)}
 .card-hover:hover .card-bg{opacity:.15}
@@ -47,11 +61,23 @@ input:focus,textarea:focus{border-color:#6c5ce7!important;box-shadow:0 0 15px rg
 .badge-purple{background:rgba(108,92,231,.15);color:#a78bfa;border:1px solid rgba(108,92,231,.3)}
 .badge-amber{background:rgba(245,158,11,.15);color:#fbbf24;border:1px solid rgba(245,158,11,.3)}
 .badge-green{background:rgba(0,210,106,.15);color:#00d26a;border:1px solid rgba(0,210,106,.3)}
+.badge-red{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.3)}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:100;display:flex;align-items:center;justify-content:center;animation:fadeIn .2s ease}
 .tab-btn{transition:all .2s;border-bottom:2px solid transparent;padding-bottom:6px;cursor:pointer}
 .tab-btn.active{color:#a855f7;border-bottom-color:#a855f7}
 .tab-btn:hover{color:#a855f7}
-.saved-toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:rgba(0,210,106,.2);border:1px solid rgba(0,210,106,.4);color:#00d26a;padding:8px 20px;border-radius:12px;font-size:14px;font-weight:600;z-index:9999;animation:savedPop .3s ease forwards}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:10px 24px;border-radius:12px;font-size:14px;font-weight:600;z-index:9999;animation:savedPop .3s ease forwards}
+.toast-success{background:rgba(0,210,106,.2);border:1px solid rgba(0,210,106,.4);color:#00d26a}
+.toast-unlock{background:rgba(245,158,11,.2);border:1px solid rgba(245,158,11,.4);color:#fbbf24}
+.toast-error{background:rgba(239,68,68,.2);border:1px solid rgba(239,68,68,.4);color:#f87171}
+.toast-info{background:rgba(59,130,246,.2);border:1px solid rgba(59,130,246,.4);color:#60a5fa}
+.line-ok{background:rgba(0,210,106,.12);border-left:3px solid #00d26a;padding:2px 6px;margin:1px 0;border-radius:3px}
+.line-err{background:rgba(239,68,68,.1);border-left:3px solid #ef4444;padding:2px 6px;margin:1px 0;border-radius:3px}
+.hint-box{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:8px;overflow:hidden;transition:all .3s}
+.deep-hint-box{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:8px;overflow:hidden}
+.task-desc{background:rgba(108,92,231,.08);border:1px solid rgba(108,92,231,.2);border-radius:8px;padding:12px}
+.drop-zone{border:2px dashed rgba(255,255,255,.15);transition:all .3s}
+.drop-zone:hover,.drop-zone.dragover{border-color:rgba(108,92,231,.5);background:rgba(108,92,231,.05)}
 </style>
 </head>
 <body>
@@ -68,25 +94,14 @@ var S={
   curLevelIdx:-1,
   curPracId:null,
   pracRes:null,
+  hintLevel:0,
+  deepHintShown:false,
   editCourse:null,
-  editPrac:null,
-  savedMsg:""
+  editPrac:null
 };
 
-function save(){
-  try{
-    localStorage.setItem("mwc_c",JSON.stringify(S.courses));
-    localStorage.setItem("mwc_p",JSON.stringify(S.progress));
-  }catch(e){console.log(e)}
-}
-function load(){
-  try{
-    var c=localStorage.getItem("mwc_c");
-    var p=localStorage.getItem("mwc_p");
-    if(c)S.courses=JSON.parse(c);
-    if(p)S.progress=JSON.parse(p);
-  }catch(e){console.log(e)}
-}
+function save(){try{localStorage.setItem("mwc_c",JSON.stringify(S.courses));localStorage.setItem("mwc_p",JSON.stringify(S.progress))}catch(e){}}
+function load(){try{var c=localStorage.getItem("mwc_c");var p=localStorage.getItem("mwc_p");if(c)S.courses=JSON.parse(c);if(p)S.progress=JSON.parse(p)}catch(e){}}
 
 function defaults(){
   if(S.courses.length===0){
@@ -95,14 +110,14 @@ function defaults(){
         {id:1,title:"Переменные",content:"В Mini World Creata переменные хранят данные.\nТипы данных:\n\u2022 string \u2014 текст: \"Привет\"\n\u2022 number \u2014 числа: 42, 3.14"},
         {id:2,title:"Объекты",content:"Объекты \u2014 основа игры.\nКоманды:\n\u2022 spawn \u2014 создать объект\n\u2022 move \u2014 переместить"}
       ],practices:[
-        {id:10,title:"Переменные в действии",levelIdx:0,task:"Создайте переменную и выведите её",example:"let myVar = \"Hello\";\nprint(myVar);",keywords:["let","print"]},
-        {id:11,title:"Создание мира",levelIdx:0,task:"Создайте пол из блоков",example:"spawn(\"grass\",0,0,0);\nspawn(\"torch\",1,2,1);",keywords:["spawn"]},
-        {id:12,title:"Движение объектов",levelIdx:1,task:"Создайте куб и переместите его",example:"spawn(\"cube\",0,0,0);\nmove(obj,10,5,0);",keywords:["spawn","move"]}
+        {id:10,title:"Переменные в действии",levelIdx:0,task:"Создайте переменную с помощью let, присвойте ей любой текст, затем выведите её через print() на новой строке",solution:"let myVar = \"Hello\";\nprint(myVar);",hints:["Начните с let имя = \"текст\";","На следующей строке используйте print(имяПеременной)","Название переменной придумайте сами \u2014 например score, name, greeting"]},
+        {id:11,title:"Создание мира",levelIdx:0,task:"Разместите 3 блока разного типа с помощью spawn \u2014 задайте каждому свои координаты x, y, z",solution:"spawn(\"grass\",0,0,0);\nspawn(\"stone\",5,0,0);\nspawn(\"torch\",2,3,2);",hints:["spawn(\"тип\", x, y, z) \u2014 создаёт блок","Укажите тип блока в кавычках, например grass, stone, wood","Задайте разные координаты каждому блоку"]},
+        {id:12,title:"Движение объектов",levelIdx:1,task:"Создайте объект через spawn, затем переместите его командой move в другие координаты",solution:"spawn(\"cube\",0,0,0);\nmove(obj,10,5,0);",hints:["Сначала spawn \u2014 создайте объект","Затем move(объект, newX, newY, newZ) \u2014 переместите","Координаты выберите сами"]}
       ]},
       {id:2,title:"Продвинутые скрипты",description:"Функции, массивы и циклы",icon:"\uD83D\uDE80",color:"#a855f7",locked:true,levels:[
         {id:3,title:"Функции",content:"Функции позволяют переиспользовать код.\nfunction name() {\n  return value;\n}"}
       ],practices:[
-        {id:20,title:"Написание функции",levelIdx:0,task:"Создайте функцию",example:"function go(){\n  return spawn(t,0,0,0);\n}",keywords:["function","return"]}
+        {id:20,title:"Написание функции",levelIdx:0,task:"Создайте функцию, которая внутри вызывает spawn и возвращает результат через return",solution:"function go(){\n  return spawn(\"block\",0,0,0);\n}",hints:["Начните с function имя(){","Внутри используйте return и spawn","Закройте функцию закрывающей скобкой }"]}
       ]}
     ];
     save();
@@ -110,89 +125,144 @@ function defaults(){
 }
 
 function esc(s){var d=document.createElement("div");d.textContent=s||"";return d.innerHTML}
-function showSaved(){
-  var old=document.getElementById("saved-toast");
-  if(old)old.remove();
-  var t=document.createElement("div");
-  t.id="saved-toast";
-  t.className="saved-toast";
-  t.textContent="\u2705 Сохранено!";
-  document.body.appendChild(t);
-  setTimeout(function(){if(t.parentNode)t.remove()},2000);
+function showToast(msg,type){
+  var old=document.querySelector(".toast");if(old)old.remove();
+  var t=document.createElement("div");t.className="toast toast-"+(type||"success");
+  t.textContent=msg;document.body.appendChild(t);
+  setTimeout(function(){if(t.parentNode)t.remove()},3000);
 }
+function dismissKb(){var el=document.getElementById("pcode");if(el){el.blur()}}
 function getCourse(id){for(var i=0;i<S.courses.length;i++){if(S.courses[i].id===id)return S.courses[i]}return null}
 function goHome(){S.page="home";S.curCourse=null;render()}
 function goCourse(id){S.curCourse=id;S.curLevelIdx=-1;S.curPracId=null;S.page="course";render()}
 function goAdmin(){S.page="admin";S.tab="create";S.auth=false;render()}
-function getCourseProgress(cid){
-  var p=S.progress[cid];
-  if(!p)return{completedLevels:[],completedPractices:[]};
-  return p;
-}
-function isLevelRead(cid,lidx){
-  var p=getCourseProgress(cid);
-  return p.completedLevels.indexOf(lidx)!==-1;
-}
-function isPracDone(cid,pid){
-  var p=getCourseProgress(cid);
-  return p.completedPractices.indexOf(pid)!==-1;
-}
+function getCourseProgress(cid){var p=S.progress[cid];if(!p)return{completedLevels:[],completedPractices:[]};return p}
+function isLevelRead(cid,lidx){return getCourseProgress(cid).completedLevels.indexOf(lidx)!==-1}
+function isPracDone(cid,pid){return getCourseProgress(cid).completedPractices.indexOf(pid)!==-1}
 function isLevelUnlocked(cid,lidx){
-  var course=getCourse(cid);
-  if(!course)return false;
+  var course=getCourse(cid);if(!course)return false;
   if(lidx===0)return true;
   var prevPracs=getPracsForLevel(course,lidx-1);
   if(prevPracs.length===0)return true;
-  for(var i=0;i<prevPracs.length;i++){
-    if(!isPracDone(cid,prevPracs[i].id))return false;
-  }
+  for(var i=0;i<prevPracs.length;i++){if(!isPracDone(cid,prevPracs[i].id))return false}
   return true;
 }
-function isPracUnlocked(cid,lidx){
-  return isLevelRead(cid,lidx);
-}
+function isPracUnlocked(cid,lidx){return isLevelRead(cid,lidx)}
 function getPracsForLevel(course,lidx){
-  var ps=course.practices||[];
-  var result=[];
-  for(var i=0;i<ps.length;i++){
-    if(ps[i].levelIdx===lidx)result.push(ps[i]);
-  }
-  return result;
-}
-function allPracsDoneForLevel(cid,lidx){
-  var course=getCourse(cid);
-  if(!course)return false;
-  var ps=getPracsForLevel(course,lidx);
-  if(ps.length===0)return true;
-  for(var i=0;i<ps.length;i++){
-    if(!isPracDone(cid,ps[i].id))return false;
-  }
-  return true;
+  var ps=course.practices||[];var r=[];
+  for(var i=0;i<ps.length;i++){if(ps[i].levelIdx===lidx)r.push(ps[i])}return r;
 }
 function isCourseComplete(cid){
-  var course=getCourse(cid);
-  if(!course)return false;
+  var course=getCourse(cid);if(!course)return false;
   var p=getCourseProgress(cid);
   if(p.completedLevels.length<course.levels.length)return false;
-  for(var i=0;i<(course.practices||[]).length;i++){
-    if(!isPracDone(cid,course.practices[i].id))return false;
-  }
+  for(var i=0;i<(course.practices||[]).length;i++){if(!isPracDone(cid,course.practices[i].id))return false}
   return true;
 }
-// Считаем только уровни (без практик)
-function countLevels(cid){
-  var course=getCourse(cid);
-  if(!course)return 0;
-  return course.levels.length;
+function countLevels(cid){var course=getCourse(cid);return course?course.levels.length:0}
+function countDoneLevels(cid){return getCourseProgress(cid).completedLevels.length}
+
+function tryUnlockNextCourse(cid){
+  if(!isCourseComplete(cid))return;
+  var idx=-1;
+  for(var i=0;i<S.courses.length;i++){if(S.courses[i].id===cid){idx=i;break}}
+  if(idx<0)return;
+  if(idx+1<S.courses.length && S.courses[idx+1].locked){
+    S.courses[idx+1].locked=false;
+    save();
+    showToast("\uD83D\uDD13 "+S.courses[idx+1].title+" разблокирован!","unlock");
+  }
 }
-function countDoneLevels(cid){
-  var p=getCourseProgress(cid);
-  return p.completedLevels.length;
+
+// ===== ЭКСПОРТ =====
+function copyCourses(){
+  try{
+    var json=JSON.stringify(S.courses,null,2);
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(json).then(function(){
+        showToast("\u2705 Курсы скопированы в буфер обмена! ("+S.courses.length+" курсов)","info");
+      }).catch(function(){fallbackCopy(json)});
+    }else{fallbackCopy(json)}
+  }catch(e){showToast("\u274C Ошибка копирования","error")}
+}
+function fallbackCopy(text){
+  var ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.left="-9999px";
+  document.body.appendChild(ta);ta.select();
+  try{document.execCommand("copy");showToast("\u2705 Курсы скопированы в буфер обмена!","info")}
+  catch(e){showToast("\u274C Не удалось скопировать","error")}
+  document.body.removeChild(ta);
+}
+function downloadCourses(){
+  var data={courses:JSON.parse(JSON.stringify(S.courses)),version:1,exportDate:new Date().toISOString()};
+  var json=JSON.stringify(data,null,2);
+  var blob=new Blob([json],{type:"application/json"});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement("a");a.href=url;
+  a.download="mini_world_courses_"+Date.now()+".json";
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast("\u2705 Файл скачан! ("+S.courses.length+" курсов)","success");
+}
+
+// ===== ИМПОРТ =====
+function processImport(text){
+  try{
+    var data=JSON.parse(text);
+    var courses=null;
+    if(data.courses && Array.isArray(data.courses)){courses=data.courses}
+    else if(Array.isArray(data)){courses=data}
+    else if(data.data && Array.isArray(data.data)){courses=data.data}
+    if(!courses){showToast("\u274C Неверный формат: массив курсов не найден","error");return}
+    for(var i=0;i<courses.length;i++){
+      if(!courses[i].title||!courses[i].levels){showToast("\u274C Курс некорректен","error");return}
+    }
+    var added=0;
+    for(var j=0;j<courses.length;j++){
+      var exists=false;
+      for(var k=0;k<S.courses.length;k++){if(S.courses[k].id===courses[j].id){exists=true;break}}
+      if(!exists){S.courses.push(courses[j]);added++}
+    }
+    if(added>0){save();showToast("\u2705 Импортировано "+added+" новых курсов!","success");render()}
+    else{showToast("\u26A0\uFE0F Все курсы уже существуют","success")}
+  }catch(e){showToast("\u274C Ошибка: "+e.message,"error")}
+}
+function pasteFromClipboard(){
+  if(navigator.clipboard && navigator.clipboard.readText){
+    navigator.clipboard.readText().then(function(text){
+      processImport(text);
+    }).catch(function(){showToast("\u274C Нет доступа к буферу. Вставьте текст вручную.","error")});
+  }else{showToast("\u274C Вставьте JSON в поле ниже и нажмите Импортировать","error")}
+}
+function handleFileSelect(files){
+  if(!files||files.length===0)return;
+  var reader=new FileReader();
+  reader.onload=function(e){processImport(e.target.result)};
+  reader.readAsText(files[0]);
+}
+function triggerImport(){
+  var input=document.createElement("input");
+  input.type="file";input.accept=".json,.txt";
+  input.onchange=function(e){handleFileSelect(e.target.files)};
+  input.click();
+}
+function importFromTextarea(){
+  var el=document.getElementById("import-text");
+  if(!el)return;
+  var text=el.value.trim();
+  if(!text){showToast("\u274C Вставьте JSON в поле","error");return}
+  processImport(text);
+  el.value="";
+}
+function setupDropZone(){
+  var dz=document.getElementById("drop-zone");
+  if(!dz)return;
+  dz.addEventListener("dragover",function(e){e.preventDefault();dz.classList.add("dragover")});
+  dz.addEventListener("dragleave",function(){dz.classList.remove("dragover")});
+  dz.addEventListener("drop",function(e){e.preventDefault();dz.classList.remove("dragover");handleFileSelect(e.dataTransfer.files)});
 }
 
 function render(){
-  var app=document.getElementById("app");
-  if(!app)return;
+  var app=document.getElementById("app");if(!app)return;
   var html="";
   if(S.page==="home")html=rHome();
   else if(S.page==="admin")html=rAdmin();
@@ -201,24 +271,18 @@ function render(){
   else if(S.page==="doPractice")html=rDoPractice();
   else if(S.page==="complete")html=rComplete();
   app.innerHTML=html;
-  setTimeout(initParticles,100);
+  setTimeout(function(){initParticles();setupDropZone()},100);
 }
 
-// ===== HOME =====
 function rHome(){
   var h="";
   for(var i=0;i<S.courses.length;i++){
-    var c=S.courses[i];
-    var done=isCourseComplete(c.id);
-    var lock=c.locked&&!done;
-    var tot=countLevels(c.id);
-    var d=countDoneLevels(c.id);
-    var pct=tot>0?Math.round(d/tot*100):0;
+    var c=S.courses[i];var done=isCourseComplete(c.id);var lock=c.locked&&!done;
+    var tot=countLevels(c.id);var d=countDoneLevels(c.id);var pct=tot>0?Math.round(d/tot*100):0;
     var btn=d>0&&d<tot?"Продолжить":"Начать";
     h+='<div class="card-hover glass rounded-2xl p-5 slide-up" style="animation-delay:'+i*.1+'s" onclick="';
     if(!lock)h+='goCourse('+c.id+')';
-    h+='">';
-    h+='<div class="card-bg rounded-2xl"></div><div class="relative z-10">';
+    h+='"><div class="card-bg rounded-2xl"></div><div class="relative z-10">';
     h+='<div class="flex items-center gap-3 mb-3"><div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0" style="background:'+c.color+'22;border:1px solid '+c.color+'44">'+c.icon+'</div>';
     h+='<div class="min-w-0"><h3 class="text-lg font-bold text-white truncate">'+esc(c.title)+'</h3>';
     if(lock)h+='<span class="text-xs text-gray-500">\uD83D\uDD12 Заблокирован</span>';
@@ -226,15 +290,44 @@ function rHome(){
     h+='</div></div>';
     h+='<p class="text-gray-400 text-xs mb-3" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">'+esc(c.description)+'</p>';
     h+='<div class="flex items-center gap-2 mb-3"><div class="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden"><div class="progress-bar h-full rounded-full" style="width:'+pct+'%"></div></div>';
-    h+='<span class="text-xs text-gray-500">'+d+'/'+tot+' \u0443\u0440.</span></div>';
+    h+='<span class="text-xs text-gray-500">'+d+'/'+tot+' ур.</span></div>';
     if(lock)h+='<button disabled class="w-full py-2 rounded-lg bg-white/5 text-gray-500 text-xs cursor-not-allowed">\uD83D\uDD12 Заблокирован</button>';
     else h+='<button onclick="event.stopPropagation();goCourse('+c.id+')" class="btn-primary w-full py-2 rounded-lg text-white text-xs font-semibold">'+btn+'</button>';
     h+='</div></div>';
   }
   var empty='';
-  if(S.courses.length===0){
-    empty='<div class="text-center py-16 slide-up"><div class="text-5xl mb-3">\uD83D\uDCDA</div><h3 class="text-lg text-gray-400 mb-2">Курсов пока нет</h3><button onclick="goAdmin()" class="btn-primary px-5 py-2 rounded-lg text-white text-sm font-semibold">Создать курс</button></div>';
-  }
+  if(S.courses.length===0)empty='<div class="text-center py-16 slide-up"><div class="text-5xl mb-3">\uD83D\uDCDA</div><h3 class="text-lg text-gray-400 mb-2">Курсов пока нет</h3></div>';
+
+  var ioBlock='';
+  ioBlock+='<div class="mt-12 slide-up">';
+  ioBlock+='<div class="text-center mb-4"><h3 class="text-lg font-bold text-white mb-1">\uD83D\uDCC2 Управление курсами</h3>';
+  ioBlock+='<p class="text-xs text-gray-500">Экспорт и импорт курсов</p></div>';
+
+  // Кнопки экспорта
+  ioBlock+='<div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">';
+  ioBlock+='<button onclick="copyCourses()" class="btn-copy py-3 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2">';
+  ioBlock+='<span>\uD83D\uDCBB</span> Копировать JSON</button>';
+  ioBlock+='<button onclick="downloadCourses()" class="btn-export py-3 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2">';
+  ioBlock+='<span>\u2B07\uFE0F</span> Скачать файл</button>';
+  ioBlock+='<button onclick="triggerImport()" class="btn-import py-3 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2">';
+  ioBlock+='<span>\uD83D\uDCC1</span> Загрузить файл</button>';
+  ioBlock+='</div>';
+
+  // Вставка из буфера
+  ioBlock+='<div class="glass rounded-xl p-4 mb-4">';
+  ioBlock+='<div class="flex items-center justify-between mb-2"><h4 class="text-sm font-semibold text-white">\u270F\uFE0F Вставить JSON</h4>';
+  ioBlock+='<button onclick="pasteFromClipboard()" class="btn-paste px-3 py-1 rounded-lg text-xs font-semibold">\uD83D\uDCCB Вставить из буфера</button></div>';
+  ioBlock+='<textarea id="import-text" rows="4" placeholder="Вставьте сюда JSON с курсами..." class="w-full px-3 py-2 rounded-lg text-xs resize-none code-editor mb-2"></textarea>';
+  ioBlock+='<div class="flex gap-2"><button onclick="importFromTextarea()" class="btn-import px-4 py-2 rounded-lg text-white text-xs font-semibold flex-1">\u2B06\uFE0F Импортировать</button></div>';
+  ioBlock+='</div>';
+
+  // Drag & Drop
+  ioBlock+='<div id="drop-zone" class="drop-zone rounded-xl p-4 text-center cursor-pointer" onclick="triggerImport()">';
+  ioBlock+='<p class="text-sm text-gray-400 mb-1">\uD83D\uDCC1 Перетащите файл (.json, .txt) сюда</p>';
+  ioBlock+='<p class="text-xs text-gray-600">Или нажмите для выбора файла</p></div>';
+  ioBlock+='<p class="text-xs text-gray-600 text-center mt-2">При импорте добавляются только новые курсы. Дубликаты по ID пропускаются.</p>';
+  ioBlock+='</div>';
+
   return '<div class="min-h-screen hero-gradient pb-8">'+
     '<header class="glass-strong sticky top-0 z-50"><div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">'+
     '<div class="flex items-center gap-2"><div class="w-9 h-9 rounded-xl flex items-center justify-center text-lg" style="animation:pulseGlow 3s infinite;background:linear-gradient(135deg,#6c5ce7,#a855f7)">'+
@@ -243,10 +336,10 @@ function rHome(){
     '<section class="max-w-5xl mx-auto px-4 pt-10">'+
     '<div class="text-center mb-8 slide-up"><h2 class="text-3xl md:text-4xl font-bold mb-2"><span class="shimmer-text">Изучайте скрипты</span></h2>'+
     '<p class="text-gray-400 text-sm max-w-xl mx-auto">Читайте теорию и выполняйте практики</p></div>'+
-    '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">'+h+'</div>'+empty+'</section></div>';
+    '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">'+h+'</div>'+empty+'</section>'+
+    '<section class="max-w-5xl mx-auto px-4">'+ioBlock+'</section></div>';
 }
 
-// ===== ADMIN =====
 function rAdmin(){
   if(!S.auth)return '<div class="min-h-screen hero-gradient flex items-center justify-center">'+
     '<div class="glass-strong rounded-2xl p-8 max-w-sm mx-4 w-full slide-up text-center">'+
@@ -256,15 +349,8 @@ function rAdmin(){
     '<button onclick="doLogin()" class="btn-primary w-full py-3 rounded-xl text-white font-semibold">Войти</button>'+
     '<button onclick="goHome()" class="mt-3 text-gray-400 text-sm hover:text-white">\u2190 Назад</button></div></div>';
   var tabs=[{id:"create",label:"\u2728 Создать"},{id:"list",label:"\uD83D\uDCCB Список"},{id:"pracs",label:"\u270D\uFE0F Практики"}];
-  var tb="";
-  for(var i=0;i<tabs.length;i++){
-    var cls=S.tab===tabs[i].id?"active":"";
-    tb+='<button onclick="S.tab=\''+tabs[i].id+'\';render()" class="tab-btn text-sm '+cls+'">'+tabs[i].label+'</button>';
-  }
-  var body="";
-  if(S.tab==="create")body=rCreate();
-  else if(S.tab==="list")body=rList();
-  else body=rPracsAdmin();
+  var tb="";for(var i=0;i<tabs.length;i++){var cls=S.tab===tabs[i].id?"active":"";tb+='<button onclick="S.tab=\''+tabs[i].id+'\';render()" class="tab-btn text-sm '+cls+'">'+tabs[i].label+'</button>';}
+  var body=S.tab==="create"?rCreate():S.tab==="list"?rList():rPracsAdmin();
   return '<div class="min-h-screen hero-gradient pb-8">'+
     '<header class="glass-strong sticky top-0 z-50"><div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">'+
     '<button onclick="goHome()" class="text-gray-400 hover:text-white text-sm">\u2190 Назад</button>'+
@@ -272,41 +358,27 @@ function rAdmin(){
     '<div class="max-w-5xl mx-auto px-4 py-6">'+
     '<div class="flex gap-4 mb-6 border-b border-white/5 pb-2">'+tb+'</div>'+body+'</div></div>';
 }
-function doLogin(){
-  var el=document.getElementById("apass");
-  if(!el)return;
-  if(el.value==="12345"){S.auth=true;render()}
-  else{el.style.borderColor="#ef4444";el.style.animation="shake .5s";setTimeout(function(){el.style.borderColor="";el.style.animation=""},500)}
-}
+function doLogin(){var el=document.getElementById("apass");if(!el)return;if(el.value==="12345"){S.auth=true;render()}else{el.style.borderColor="#ef4444";el.style.animation="shake .5s";setTimeout(function(){el.style.borderColor="";el.style.animation=""},500)}}
 
 function rCreate(){
   var c=S.editCourse||{title:"",description:"",icon:"\uD83D\uDCDA",color:"#6c5ce7",levels:[],practices:[]};
-  var lh="";
-  for(var i=0;i<c.levels.length;i++){
-    var lv=c.levels[i];
-    lh+='<div class="glass rounded-xl p-3 slide-up" style="animation-delay:'+i*.03+'s">'+
+  var lh="";for(var i=0;i<c.levels.length;i++){var lv=c.levels[i];lh+='<div class="glass rounded-xl p-3 slide-up" style="animation-delay:'+i*.03+'s">'+
     '<div class="flex items-center justify-between mb-1"><h4 class="text-white font-semibold text-xs">Уровень '+(i+1)+'</h4>'+
     '<button onclick="rmLev('+i+')" class="text-red-400 hover:text-red-300 text-xs">\u2716</button></div>'+
     '<div class="space-y-1">'+
     '<input type="text" id="lt'+i+'" placeholder="Название" class="w-full px-2 py-1.5 rounded text-xs" value="'+esc(lv.title||'')+'">'+
     '<textarea id="lc'+i+'" rows="2" placeholder="Содержание (теория)" class="w-full px-2 py-1.5 rounded text-xs resize-none">'+esc(lv.content||'')+'</textarea>'+
-    '</div></div>';
-  }
-  var ph="";
-  var pracs=c.practices||[];
-  for(var j=0;j<pracs.length;j++){
-    var pc=pracs[j];
-    ph+='<div class="glass rounded-xl p-3 slide-up" style="animation-delay:'+j*.03+'s">'+
+    '</div></div>';}
+  var ph="";var pracs=c.practices||[];for(var j=0;j<pracs.length;j++){var pc=pracs[j];ph+='<div class="glass rounded-xl p-3 slide-up" style="animation-delay:'+j*.03+'s">'+
     '<div class="flex items-center justify-between mb-1"><h4 class="text-amber-400 font-semibold text-xs">'+esc(pc.title||'Практика')+'</h4>'+
     '<button onclick="rmPrac('+j+')" class="text-red-400 hover:text-red-300 text-xs">\u2716</button></div>'+
     '<div class="space-y-1">'+
     '<input type="text" id="pt'+j+'" placeholder="Название практики" class="w-full px-2 py-1.5 rounded text-xs" value="'+esc(pc.title||'')+'">'+
     '<input type="number" id="pl'+j+'" placeholder="Уровень (0=первый)" min="0" class="w-full px-2 py-1.5 rounded text-xs" value="'+(pc.levelIdx||0)+'">'+
-    '<input type="text" id="pks'+j+'" placeholder="Задание" class="w-full px-2 py-1.5 rounded text-xs" value="'+esc(pc.task||'')+'">'+
-    '<textarea id="pe'+j+'" rows="2" placeholder="Пример решения" class="w-full px-2 py-1.5 rounded text-xs resize-none code-editor">'+esc(pc.example||'')+'</textarea>'+
-    '<input type="text" id="pkw'+j+'" placeholder="Ключевые слова через запятую" class="w-full px-2 py-1.5 rounded text-xs" value="'+esc((pc.keywords||[]).join(', '))+'">'+
-    '</div></div>';
-  }
+    '<textarea id="pks'+j+'" rows="2" placeholder="Описание задания (ЧТО нужно сделать, БЕЗ кода)" class="w-full px-2 py-1.5 rounded text-xs resize-none">'+esc(pc.task||'')+'</textarea>'+
+    '<textarea id="psol'+j+'" rows="3" placeholder="Правильное решение (скрыто от игрока, для проверки)" class="w-full px-2 py-1.5 rounded text-xs resize-none code-editor">'+esc(pc.solution||'')+'</textarea>'+
+    '<textarea id="phints'+j+'" rows="2" placeholder="Подсказки (каждая с новой строки)" class="w-full px-2 py-1.5 rounded text-xs resize-none">'+esc((pc.hints||[]).join('\n'))+'</textarea>'+
+    '</div></div>';}
   return '<div class="glass-strong rounded-2xl p-5 slide-up">'+
     '<h2 class="text-xl font-bold text-white mb-4">\u2728 Создание курса</h2>'+
     '<div class="space-y-4">'+
@@ -327,95 +399,47 @@ function rCreate(){
     '<button onclick="doSaveCourse()" class="btn-primary px-5 py-2 rounded-lg text-white text-sm font-semibold">\uD83D\uDCBE Сохранить курс</button>'+
     '<button onclick="S.editCourse=null;render()" class="px-4 py-2 rounded-lg bg-white/5 text-gray-400 text-sm">Сброс</button></div></div></div>';
 }
-function addLev(){
-  if(!S.editCourse)S.editCourse={title:"",description:"",icon:"\uD83D\uDCDA",color:"#6c5ce7",levels:[],practices:[]};
-  if(!S.editCourse.practices)S.editCourse.practices=[];
-  S.editCourse.levels.push({title:"",content:""});
-  render();
-}
-function rmLev(i){
-  if(S.editCourse&&S.editCourse.levels){
-    S.editCourse.levels.splice(i,1);
-    render();
-  }
-}
-function addPrac(){
-  if(!S.editCourse)S.editCourse={title:"",description:"",icon:"\uD83D\uDCDA",color:"#6c5ce7",levels:[],practices:[]};
-  if(!S.editCourse.practices)S.editCourse.practices=[];
-  S.editCourse.practices.push({title:"",levelIdx:0,task:"",example:"",keywords:[]});
-  render();
-}
-function rmPrac(i){
-  if(S.editCourse&&S.editCourse.practices){
-    S.editCourse.practices.splice(i,1);
-    render();
-  }
-}
+function addLev(){if(!S.editCourse)S.editCourse={title:"",description:"",icon:"\uD83D\uDCDA",color:"#6c5ce7",levels:[],practices:[]};if(!S.editCourse.practices)S.editCourse.practices=[];S.editCourse.levels.push({title:"",content:""});render()}
+function rmLev(i){if(S.editCourse&&S.editCourse.levels){S.editCourse.levels.splice(i,1);render()}}
+function addPrac(){if(!S.editCourse)S.editCourse={title:"",description:"",icon:"\uD83D\uDCDA",color:"#6c5ce7",levels:[],practices:[]};if(!S.editCourse.practices)S.editCourse.practices=[];S.editCourse.practices.push({title:"",levelIdx:0,task:"",solution:"",hints:[]});render()}
+function rmPrac(i){if(S.editCourse&&S.editCourse.practices){S.editCourse.practices.splice(i,1);render()}}
 function doSaveCourse(){
   try{
-    var te=document.getElementById("ct");
-    if(!te){alert("Ошибка формы");return}
-    var title=te.value.trim();
-    var descEl=document.getElementById("cd");
-    var desc=descEl?descEl.value.trim():"";
-    var iconEl=document.getElementById("ci");
-    var icon=iconEl?iconEl.value.trim():"\uD83D\uDCDA";
-    var colorEl=document.getElementById("cc");
-    var color=colorEl?colorEl.value:"#6c5ce7";
-    if(!title){alert("Введите название курса");return}
-    if(!desc){alert("Введите описание курса");return}
-    var ec=S.editCourse;
-    var levels=[];
+    var te=document.getElementById("ct");if(!te){alert("Ошибка формы");return}
+    var title=te.value.trim();var descEl=document.getElementById("cd");var desc=descEl?descEl.value.trim():"";
+    var iconEl=document.getElementById("ci");var icon=iconEl?iconEl.value.trim():"\uD83D\uDCDA";
+    var colorEl=document.getElementById("cc");var color=colorEl?colorEl.value:"#6c5ce7";
+    if(!title){alert("Введите название");return}if(!desc){alert("Введите описание");return}
+    var ec=S.editCourse;var levels=[];
     for(var i=0;i<ec.levels.length;i++){
-      var tEl=document.getElementById("lt"+i);
-      var cEl=document.getElementById("lc"+i);
-      var tt=tEl?tEl.value.trim():"";
-      var co=cEl?cEl.value.trim():"";
+      var tEl=document.getElementById("lt"+i);var cEl=document.getElementById("lc"+i);
+      var tt=tEl?tEl.value.trim():"";var co=cEl?cEl.value.trim():"";
       if(tt&&co)levels.push({id:Date.now()+i,title:tt,content:co});
     }
-    if(levels.length===0){alert("Добавьте хотя бы один уровень с названием и содержанием");return}
+    if(levels.length===0){alert("Добавьте хотя бы один уровень");return}
     var practices=[];
     if(ec.practices){
       for(var j=0;j<ec.practices.length;j++){
-        var ptt=document.getElementById("pt"+j);
-        var pl=document.getElementById("pl"+j);
-        var ptk=document.getElementById("pks"+j);
-        var pex=document.getElementById("pe"+j);
-        var pkw=document.getElementById("pkw"+j);
-        var ptitle=ptt?ptt.value.trim():"";
-        var plevelIdx=pl?parseInt(pl.value):0;
-        var ptask=ptk?ptk.value.trim():"";
-        var pexample=pex?pex.value.trim():"";
-        var pkwsStr=pkw?pkw.value:"";
-        var pkws=pkwsStr.split(",").map(function(s){return s.trim().toLowerCase()}).filter(function(s){return s});
-        if(ptitle)practices.push({id:Date.now()+100+j,title:ptitle,levelIdx:isNaN(plevelIdx)?0:plevelIdx,task:ptask,example:pexample,keywords:pkws});
+        var ptt=document.getElementById("pt"+j);var pl=document.getElementById("pl"+j);
+        var ptk=document.getElementById("pks"+j);var psol=document.getElementById("psol"+j);
+        var phints=document.getElementById("phints"+j);
+        var ptitle=ptt?ptt.value.trim():"";var plevelIdx=pl?parseInt(pl.value):0;
+        var ptask=ptk?ptk.value.trim():"";var psolution=psol?psol.value.trim():"";
+        var phintsArr=phints?phints.value.split('\n').map(function(h){return h.trim()}).filter(function(h){return h}):[];
+        if(ptitle)practices.push({id:Date.now()+100+j,title:ptitle,levelIdx:isNaN(plevelIdx)?0:plevelIdx,task:ptask,solution:psolution,hints:phintsArr});
       }
     }
-    var found=-1;
-    for(var f=0;f<S.courses.length;f++){
-      if(ec&&S.courses[f].id===ec.id){found=f;break}
-    }
+    var found=-1;for(var f=0;f<S.courses.length;f++){if(ec&&S.courses[f].id===ec.id){found=f;break}}
     var nc={id:found>=0?ec.id:Date.now(),title:title,description:desc,icon:icon,color:color,locked:ec&&ec.id?ec.locked:false,levels:levels,practices:practices};
-    if(found>=0){
-      S.courses[found]=nc;
-    }else{
-      S.courses.push(nc);
-    }
-    S.editCourse=null;
-    save();
-    showSaved();
-    render();
-  }catch(e){
-    alert("Ошибка сохранения: "+e.message);
-    console.log(e);
-  }
+    if(found>=0)S.courses[found]=nc;else S.courses.push(nc);
+    S.editCourse=null;save();showToast("\u2705 Сохранено!","success");render();
+  }catch(e){alert("Ошибка: "+e.message)}
 }
 function rList(){
   if(S.courses.length===0)return '<div class="glass-strong rounded-2xl p-10 text-center slide-up"><div class="text-4xl mb-3">\uD83D\uDCEE</div><h3 class="text-gray-400">Нет курсов</h3><button onclick="S.tab=\'create\';render()" class="btn-primary mt-3 px-5 py-2 rounded-lg text-white text-sm">Создать</button></div>';
   var h='<div class="space-y-3">';
   for(var i=0;i<S.courses.length;i++){
-    var c=S.courses[i];
-    var pc=(c.practices||[]).length;
+    var c=S.courses[i];var pc=(c.practices||[]).length;
     h+='<div class="glass rounded-xl p-4 flex items-center gap-3 slide-up" style="animation-delay:'+i*.05+'s">'+
       '<div class="w-10 h-10 rounded-lg flex items-center justify-center text-xl flex-shrink-0" style="background:'+c.color+'22">'+c.icon+'</div>'+
       '<div class="min-w-0 flex-1"><h3 class="text-white font-semibold text-sm truncate">'+esc(c.title)+'</h3>'+
@@ -427,59 +451,38 @@ function rList(){
   }
   h+='</div>';return h;
 }
-function editC(id){
-  var c=null;
-  for(var i=0;i<S.courses.length;i++){if(S.courses[i].id===id)c=JSON.parse(JSON.stringify(S.courses[i]))}
-  if(c){S.editCourse=c;S.tab="create";render()}
-}
-function delC(id){
-  if(confirm("Удалить курс?")){
-    S.courses=S.courses.filter(function(x){return x.id!==id});
-    save();render();
-  }
-}
+function editC(id){var c=null;for(var i=0;i<S.courses.length;i++){if(S.courses[i].id===id)c=JSON.parse(JSON.stringify(S.courses[i]))}if(c){S.editCourse=c;S.tab="create";render()}}
+function delC(id){if(confirm("Удалить курс?")){S.courses=S.courses.filter(function(x){return x.id!==id});save();render()}}
 
 function rPracsAdmin(){
   if(S.courses.length===0)return '<div class="glass-strong rounded-2xl p-10 text-center slide-up"><div class="text-4xl mb-3">\uD83D\uDCCE</div><h3 class="text-gray-400">Сначала создайте курс</h3></div>';
   var h='<div class="space-y-4">';
   for(var i=0;i<S.courses.length;i++){
-    var c=S.courses[i];
-    var pracs=c.practices||[];
+    var c=S.courses[i];var pracs=c.practices||[];
     h+='<div class="glass rounded-xl p-4 slide-up" style="animation-delay:'+i*.05+'s">'+
       '<div class="flex items-center gap-3 mb-3"><div class="w-9 h-9 rounded-lg flex items-center justify-center text-lg flex-shrink-0" style="background:'+c.color+'22">'+c.icon+'</div>'+
       '<div class="min-w-0 flex-1"><h3 class="text-white font-semibold text-sm">'+esc(c.title)+'</h3>'+
       '<p class="text-xs text-gray-400">'+pracs.length+' практик</p></div>'+
       '<button onclick="openNewPrac('+c.id+')" class="btn-secondary px-3 py-1.5 rounded-lg text-xs text-amber-400" style="border-color:rgba(245,158,11,.3)">+ Добавить</button></div>';
-    if(pracs.length>0){
-      for(var j=0;j<pracs.length;j++){
-        var p=pracs[j];
-        h+='<div class="glass rounded-lg p-3 ml-12 mb-2">'+
-          '<div class="flex items-center justify-between">'+
-          '<div class="min-w-0 flex-1"><h4 class="text-amber-400 font-semibold text-xs">'+esc(p.title)+'</h4>'+
-          '<p class="text-gray-500 text-xs">\u0423\u0440\u043E\u0432\u0435\u043D\u044C '+(p.levelIdx+1)+' \u2022 '+esc(p.task)+'</p></div>'+
-          '<div class="flex gap-1 flex-shrink-0 ml-2">'+
-          '<button onclick="openEditPrac('+c.id+','+j+')" class="px-2 py-1 rounded bg-white/5 text-gray-400 text-xs hover:text-white">\u270F\uFE0F</button>'+
-          '<button onclick="delPrac('+c.id+','+j+')" class="px-2 py-1 rounded bg-red-500/10 text-red-400 text-xs">\u2716</button></div></div></div>';
-      }
-    }
+    if(pracs.length>0){for(var j=0;j<pracs.length;j++){var p=pracs[j];
+      h+='<div class="glass rounded-lg p-3 ml-12 mb-2">'+
+        '<div class="flex items-center justify-between">'+
+        '<div class="min-w-0 flex-1"><h4 class="text-amber-400 font-semibold text-xs">'+esc(p.title)+'</h4>'+
+        '<p class="text-gray-500 text-xs">Уровень '+(p.levelIdx+1)+' \u2022 '+esc(p.task)+'</p></div>'+
+        '<div class="flex gap-1 flex-shrink-0 ml-2">'+
+        '<button onclick="openEditPrac('+c.id+','+j+')" class="px-2 py-1 rounded bg-white/5 text-gray-400 text-xs hover:text-white">\u270F\uFE0F</button>'+
+        '<button onclick="delPrac('+c.id+','+j+')" class="px-2 py-1 rounded bg-red-500/10 text-red-400 text-xs">\u2716</button></div></div></div>';
+    }}
     h+='</div>';
   }
   h+='</div>';
   if(S.editPrac)h+=rPracModal();
   return h;
 }
-function openNewPrac(cid){S.editPrac={cid:cid,idx:-1,title:"",levelIdx:0,task:"",example:"",keywords:[]};render()}
-function openEditPrac(cid,idx){
-  var course=getCourse(cid);
-  if(!course||!course.practices||!course.practices[idx])return;
-  var p=course.practices[idx];
-  S.editPrac={cid:cid,idx:idx,title:p.title,levelIdx:p.levelIdx,task:p.task,example:p.example,keywords:p.keywords.slice()};
-  render();
-}
+function openNewPrac(cid){S.editPrac={cid:cid,idx:-1,title:"",levelIdx:0,task:"",solution:"",hints:[]};render()}
+function openEditPrac(cid,idx){var course=getCourse(cid);if(!course||!course.practices||!course.practices[idx])return;var p=course.practices[idx];S.editPrac={cid:cid,idx:idx,title:p.title,levelIdx:p.levelIdx,task:p.task,solution:p.solution,hints:(p.hints||[]).slice()};render()}
 function rPracModal(){
-  var ep=S.editPrac;
-  if(!ep)return "";
-  var kwStr=(ep.keywords||[]).join(", ");
+  var ep=S.editPrac;if(!ep)return "";var hStr=(ep.hints||[]).join('\n');
   return '<div class="modal-overlay" onclick="if(event.target===this){S.editPrac=null;render()}">'+
     '<div class="glass-strong rounded-2xl p-5 max-w-lg w-full mx-4 slide-up" onclick="event.stopPropagation()">'+
     '<div class="flex items-center justify-between mb-4">'+
@@ -488,60 +491,37 @@ function rPracModal(){
     '<div class="space-y-3">'+
     '<div><label class="text-xs text-gray-400 mb-1 block">Название</label><input type="text" id="mp-t" class="w-full px-3 py-2 rounded-lg text-sm" value="'+esc(ep.title)+'"></div>'+
     '<div><label class="text-xs text-gray-400 mb-1 block">К уровню (0 = первый)</label><input type="number" id="mp-l" class="w-full px-3 py-2 rounded-lg text-sm" value="'+ep.levelIdx+'" min="0"></div>'+
-    '<div><label class="text-xs text-gray-400 mb-1 block">Задание</label><input type="text" id="mp-k" class="w-full px-3 py-2 rounded-lg text-sm" value="'+esc(ep.task)+'"></div>'+
-    '<div><label class="text-xs text-gray-400 mb-1 block">Пример решения</label><textarea id="mp-e" rows="4" class="w-full px-3 py-2 rounded-lg text-sm resize-none code-editor">'+esc(ep.example)+'</textarea></div>'+
-    '<div><label class="text-xs text-gray-400 mb-1 block">Ключевые слова (через запятую)</label><input type="text" id="mp-w" class="w-full px-3 py-2 rounded-lg text-sm" value="'+esc(kwStr)+'"></div>'+
+    '<div><label class="text-xs text-gray-400 mb-1 block">Описание задания (ЧТО сделать, БЕЗ кода)</label><textarea id="mp-k" rows="2" class="w-full px-3 py-2 rounded-lg text-sm resize-none">'+esc(ep.task)+'</textarea></div>'+
+    '<div><label class="text-xs text-gray-400 mb-1 block">Правильное решение (скрыто, для проверки)</label><textarea id="mp-e" rows="3" class="w-full px-3 py-2 rounded-lg text-sm resize-none code-editor">'+esc(ep.solution)+'</textarea></div>'+
+    '<div><label class="text-xs text-gray-400 mb-1 block">Подсказки (каждая с новой строки)</label><textarea id="mp-h" rows="3" class="w-full px-3 py-2 rounded-lg text-sm resize-none">'+esc(hStr)+'</textarea></div>'+
     '<div class="flex gap-2 pt-2">'+
     '<button onclick="doSavePrac()" class="btn-primary px-5 py-2 rounded-lg text-white text-sm font-semibold">\uD83D\uDCBE Сохранить</button>'+
     '<button onclick="S.editPrac=null;render()" class="px-4 py-2 rounded-lg bg-white/5 text-gray-400 text-sm">Отмена</button></div></div></div></div>';
 }
 function doSavePrac(){
   try{
-    var ep=S.editPrac;
-    if(!ep)return;
-    var titleEl=document.getElementById("mp-t");
-    var levelEl=document.getElementById("mp-l");
-    var taskEl=document.getElementById("mp-k");
-    var exampleEl=document.getElementById("mp-e");
-    var kwEl=document.getElementById("mp-w");
+    var ep=S.editPrac;if(!ep)return;
+    var titleEl=document.getElementById("mp-t");var levelEl=document.getElementById("mp-l");
+    var taskEl=document.getElementById("mp-k");var solEl=document.getElementById("mp-e");
+    var hintEl=document.getElementById("mp-h");
     if(!titleEl){alert("Ошибка формы");return}
-    var title=titleEl.value.trim();
-    var levelIdx=levelEl?parseInt(levelEl.value):0;
-    var task=taskEl?taskEl.value.trim():"";
-    var example=exampleEl?exampleEl.value.trim():"";
-    var kwStr=kwEl?kwEl.value:"";
-    var keywords=kwStr.split(",").map(function(s){return s.trim().toLowerCase()}).filter(function(s){return s});
+    var title=titleEl.value.trim();var levelIdx=levelEl?parseInt(levelEl.value):0;
+    var task=taskEl?taskEl.value.trim():"";var solution=solEl?solEl.value.trim():"";
+    var hintsStr=hintEl?hintEl.value:"";var hints=hintsStr.split('\n').map(function(h){return h.trim()}).filter(function(h){return h});
     if(!title){alert("Введите название");return}
-    var course=getCourse(ep.cid);
-    if(!course)return;
+    var course=getCourse(ep.cid);if(!course)return;
     if(!course.practices)course.practices=[];
-    var obj={id:ep.idx>=0?course.practices[ep.idx].id:Date.now(),title:title,levelIdx:isNaN(levelIdx)?0:levelIdx,task:task,example:example,keywords:keywords};
-    if(ep.idx>=0){course.practices[ep.idx]=obj}
-    else{course.practices.push(obj)}
-    S.editPrac=null;
-    save();
-    showSaved();
-    render();
-  }catch(e){
-    alert("Ошибка: "+e.message);
-  }
+    var obj={id:ep.idx>=0?course.practices[ep.idx].id:Date.now(),title:title,levelIdx:isNaN(levelIdx)?0:levelIdx,task:task,solution:solution,hints:hints};
+    if(ep.idx>=0)course.practices[ep.idx]=obj;else course.practices.push(obj);
+    S.editPrac=null;save();showToast("\u2705 Сохранено!","success");render();
+  }catch(e){alert("Ошибка: "+e.message)}
 }
-function delPrac(cid,idx){
-  if(!confirm("Удалить практику?"))return;
-  var course=getCourse(cid);
-  if(course&&course.practices){course.practices.splice(idx,1);save();render()}
-}
+function delPrac(cid,idx){if(!confirm("Удалить практику?"))return;var course=getCourse(cid);if(course&&course.practices){course.practices.splice(idx,1);save();render()}}
 
-// ===== COURSE VIEW =====
 function rCourse(){
-  var course=getCourse(S.curCourse);
-  if(!course){goHome();return ""}
-  var done=isCourseComplete(course.id);
-  if(done){S.page="complete";launchFW();setTimeout(function(){render()},800);return ""}
-  var tot=countLevels(course.id);
-  var d=countDoneLevels(course.id);
-  var pct=tot>0?Math.round(d/tot*100):0;
-
+  var course=getCourse(S.curCourse);if(!course){goHome();return ""}
+  var done=isCourseComplete(course.id);if(done){S.page="complete";launchFW();setTimeout(function(){render()},800);return ""}
+  var tot=countLevels(course.id);var d=countDoneLevels(course.id);var pct=tot>0?Math.round(d/tot*100):0;
   var html='<div class="min-h-screen hero-gradient pb-8">'+
     '<header class="glass-strong sticky top-0 z-50"><div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">'+
     '<button onclick="goHome()" class="text-gray-400 hover:text-white text-sm">\u2190 Курсы</button>'+
@@ -550,70 +530,43 @@ function rCourse(){
     '<div class="glass-strong rounded-2xl p-5 mb-5 slide-up">'+
     '<div class="flex items-center gap-3 mb-3"><div class="w-12 h-12 rounded-xl flex items-center justify-center text-3xl flex-shrink-0" style="background:'+course.color+'22;border:1px solid '+course.color+'44">'+course.icon+'</div>'+
     '<div><h3 class="text-xl font-bold text-white">'+esc(course.title)+'</h3><p class="text-xs text-gray-400">'+esc(course.description)+'</p></div></div>'+
-    '<div class="flex items-center gap-2">'+
-    '<div class="flex-1 h-2 bg-white/5 rounded-full overflow-hidden"><div class="progress-bar h-full rounded-full" style="width:'+pct+'%"></div></div>'+
-    '<span class="text-xs text-gray-500">'+d+'/'+tot+' \u0443\u0440.</span></div></div>';
-
+    '<div class="flex items-center gap-2"><div class="flex-1 h-2 bg-white/5 rounded-full overflow-hidden"><div class="progress-bar h-full rounded-full" style="width:'+pct+'%"></div></div>'+
+    '<span class="text-xs text-gray-500">'+d+'/'+tot+' ур.</span></div></div>';
   for(var i=0;i<course.levels.length;i++){
-    var lv=course.levels[i];
-    var unlocked=isLevelUnlocked(course.id,i);
-    var read=isLevelRead(course.id,i);
+    var lv=course.levels[i];var unlocked=isLevelUnlocked(course.id,i);var read=isLevelRead(course.id,i);
     var pracs=getPracsForLevel(course,i);
-
     var lvlBg=unlocked?(read?"bg-green-500/20 text-green-400":"bg-purple-500/20 text-purple-400"):"bg-white/5 text-gray-600";
     var lvlIcon=unlocked?(read?"\u2713":"\uD83D\uDCD6"):"\uD83D\uDD12";
     var lvlPulse=unlocked&&!read?' style="animation:pulseGlow 2s infinite"':'';
     var lvlStatusText=unlocked?(read?"\u2705 Прочитано":"\u25B6 Текущий"):"\uD83D\uDD12 Заблокирован";
-
     html+='<div class="level-card glass rounded-xl p-4 '+(unlocked?"":"locked")+'" style="cursor:'+(unlocked?"pointer":"not-allowed")+';animation:slideUp .4s ease forwards;animation-delay:'+i*.1+'s" onclick="'+(unlocked?"readLevel("+i+")":"")+'">'+
       '<canvas class="particle-canvas" id="pc'+i+'" data-status="'+(read?"done":"active")+'" data-color="'+course.color+'"></canvas>'+
       '<div class="relative z-10 flex items-center gap-3">'+
       '<div class="w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold flex-shrink-0 '+lvlBg+'"'+lvlPulse+'>'+lvlIcon+'</div>'+
-      '<div class="min-w-0 flex-1">'+
-      '<h4 class="text-white font-semibold text-sm">'+esc(lv.title)+'</h4>'+
-      '<p class="text-[10px] text-gray-400">'+lvlStatusText+'</p>'+
-      '</div></div></div>';
-
-    if(read && pracs.length>0){
+      '<div class="min-w-0 flex-1"><h4 class="text-white font-semibold text-sm">'+esc(lv.title)+'</h4><p class="text-[10px] text-gray-400">'+lvlStatusText+'</p></div></div></div>';
+    if(read&&pracs.length>0){
       html+='<div class="ml-4 border-l-2 border-amber-500/20 pl-4 mb-2">';
       for(var j=0;j<pracs.length;j++){
-        var p=pracs[j];
-        var pDone=isPracDone(course.id,p.id);
-        var pUnlocked=isPracUnlocked(course.id,i);
+        var p=pracs[j];var pDone=isPracDone(course.id,p.id);var pUnlocked=isPracUnlocked(course.id,i);
         var pSt=pDone?"done":(pUnlocked?"":"locked");
-
         html+='<div class="prac-card glass rounded-xl p-3 mb-2 '+pSt+'" style="cursor:'+(pUnlocked?"pointer":"not-allowed")+';animation:slideUp .3s ease forwards;animation-delay:'+((i*2+j+1)*.08)+'s" onclick="'+(pUnlocked?"doPractice("+p.id+")":"")+'">'+
           '<div class="flex items-center gap-3">'+
           '<div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm flex-shrink-0 '+(pDone?"bg-green-500/20 text-green-400":"bg-amber-500/20 text-amber-400")+'">'+(pDone?"\u2713":"\u270D\uFE0F")+'</div>'+
-          '<div class="min-w-0 flex-1">'+
-          '<h4 class="text-white font-semibold text-xs">'+esc(p.title)+'</h4>'+
-          '<p class="text-[10px] text-gray-500 truncate">'+esc(p.task)+'</p></div>'+
+          '<div class="min-w-0 flex-1"><h4 class="text-white font-semibold text-xs">'+esc(p.title)+'</h4><p class="text-[10px] text-gray-500 truncate">'+esc(p.task.substring(0,60))+'...</p></div>'+
           (pDone?'<span class="badge badge-green">\u0413\u043E\u0442\u043E\u0432</span>':(pUnlocked?'<span class="badge badge-amber">\u0416\u0434\u0451\u0442</span>':'<span class="badge" style="background:rgba(255,255,255,.05);color:#666">\u2716</span>'))+
           '</div></div>';
       }
       html+='</div>';
     }
   }
-
-  html+='</div></div>';
-  return html;
+  html+='</div></div>';return html;
 }
 
 function readLevel(idx){S.curLevelIdx=idx;S.page="readLevel";render()}
-
 function rReadLevel(){
-  var course=getCourse(S.curCourse);
-  if(!course)return "";
-  var lv=course.levels[S.curLevelIdx];
-  if(!lv)return "";
-  var ch="";
-  var lines=lv.content.split("\n");
-  for(var i=0;i<lines.length;i++){
-    var line=lines[i];
-    if(line.trim()==="")ch+="<br>";
-    else if(line.trim().indexOf("\u2022")===0)ch+='<li class="text-gray-300 ml-4 text-sm">'+esc(line.trim().slice(1))+'</li>';
-    else ch+='<p class="text-gray-300 text-sm">'+esc(line)+'</p>';
-  }
+  var course=getCourse(S.curCourse);if(!course)return "";var lv=course.levels[S.curLevelIdx];if(!lv)return "";
+  var ch="";var lines=lv.content.split("\n");
+  for(var i=0;i<lines.length;i++){var line=lines[i];if(line.trim()==="")ch+="<br>";else if(line.trim().indexOf("\u2022")===0)ch+='<li class="text-gray-300 ml-4 text-sm">'+esc(line.trim().slice(1))+'</li>';else ch+='<p class="text-gray-300 text-sm">'+esc(line)+'</p>';}
   return '<div class="min-h-screen hero-gradient pb-8">'+
     '<header class="glass-strong sticky top-0 z-50"><div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">'+
     '<button onclick="S.page=\'course\';render()" class="text-gray-400 hover:text-white text-sm">\u2190 Назад</button>'+
@@ -626,45 +579,49 @@ function rReadLevel(){
     '<div class="border-t border-white/5 pt-4">'+
     '<button onclick="markRead()" class="btn-primary px-6 py-3 rounded-xl text-white text-sm font-semibold w-full">\u2705 Прочитал, продолжить \u2192</button></div></div></div></div>';
 }
+function markRead(){var course=getCourse(S.curCourse);if(!course)return;var idx=S.curLevelIdx;var p=getCourseProgress(course.id);if(p.completedLevels.indexOf(idx)===-1)p.completedLevels.push(idx);S.progress[course.id]=p;save();S.page="course";render()}
 
-function markRead(){
-  var course=getCourse(S.curCourse);
-  if(!course)return;
-  var idx=S.curLevelIdx;
-  var p=getCourseProgress(course.id);
-  if(p.completedLevels.indexOf(idx)===-1)p.completedLevels.push(idx);
-  S.progress[course.id]=p;
-  save();
-  S.page="course";
-  render();
-}
-
-function doPractice(pid){S.curPracId=pid;S.pracRes=null;S.page="doPractice";render()}
+function doPractice(pid){S.curPracId=pid;S.pracRes=null;S.hintLevel=0;S.deepHintShown=false;S.page="doPractice";render()}
 
 function rDoPractice(){
-  var course=getCourse(S.curCourse);
-  if(!course)return "";
-  var p=null;
-  for(var i=0;i<(course.practices||[]).length;i++){if(course.practices[i].id===S.curPracId){p=course.practices[i];break}}
+  var course=getCourse(S.curCourse);if(!course)return "";
+  var p=null;for(var i=0;i<(course.practices||[]).length;i++){if(course.practices[i].id===S.curPracId){p=course.practices[i];break}}
   if(!p)return "";
-
-  var r=S.pracRes;
-  var rh="";
+  var hints=p.hints||[];
+  var shownHints=hints.slice(0,S.hintLevel);
+  var allHintsUsed=S.hintLevel>=hints.length;
+  var hintsHtml="";
+  if(shownHints.length>0){
+    hintsHtml='<div class="hint-box mb-4"><div class="px-3 py-2 border-b border-amber-500/10"><span class="text-xs text-amber-400 font-semibold">\uD83D\uDCA1 Подсказки ('+shownHints.length+'/'+hints.length+')</span></div>';
+    for(var i=0;i<shownHints.length;i++){hintsHtml+='<div class="px-3 py-2 text-xs text-gray-300 border-b border-amber-500/5 last:border-0">'+esc(shownHints[i])+'</div>';}
+    hintsHtml+='</div>';
+  }
+  var deepHintHtml="";
+  if(S.deepHintShown){
+    deepHintHtml='<div class="deep-hint-box mb-4"><div class="px-3 py-2 border-b border-red-500/10"><span class="text-xs text-red-400 font-semibold">\uD83D\uDD13 Полный ответ:</span></div>'+
+      '<div class="code-editor px-3 py-2 m-2 rounded text-sm whitespace-pre-wrap">'+esc(p.solution)+'</div></div>';
+  }
+  var r=S.pracRes;var rh="";
   if(r){
     var cls=r.success?"bg-green-500/10 border border-green-500/30":"bg-red-500/10 border border-red-500/30";
-    var icon=r.success?"\uD83C\uDF89":"\u274C";
-    var col=r.success?"text-green-400":"text-red-400";
-    var msg=r.success?"Отлично! Практика пройдена!":"Попробуйте ещё раз";
+    var icon=r.success?"\uD83C\uDF89":"\u274C";var col=r.success?"text-green-400":"text-red-400";
+    var msg=r.success?"Отлично! Практика пройдена!":"Есть ошибки \u2014 исправьте код";
     rh='<div class="rounded-xl p-3 mb-4 '+cls+'"><div class="flex items-center gap-2"><span class="text-lg">'+icon+'</span><span class="font-semibold '+col+' text-sm">'+msg+'</span></div>';
-    if(!r.success&&r.detail)rh+='<p class="text-xs text-red-300 mt-2">'+r.detail+'</p>';
+    if(!r.success&&r.detail)rh+='<p class="text-xs text-red-300 mt-1">'+r.detail+'</p>';
+    if(!r.success&&r.diffLines){
+      rh+='<div class="mt-2 rounded-lg p-2 text-xs space-y-0.5" style="background:#1a1a2e;border:1px solid rgba(255,255,255,.1)">';
+      for(var d=0;d<r.diffLines.length;d++){var dl=r.diffLines[d];var lineCls=dl.type==='ok'?'line-ok':'line-err';rh+='<div class="'+lineCls+' font-mono text-xs">'+esc(dl.text)+'</div>';}
+      rh+='</div>';
+    }
     rh+='</div>';
   }
-
   var nb="";
-  if(r&&r.success){
-    nb='<button onclick="finishPractice()" class="btn-primary px-6 py-3 rounded-xl text-white text-sm font-semibold w-full">\u2705 Готово! Вернуться к курсу</button>';
+  if(r&&r.success){nb='<button onclick="finishPractice()" class="btn-primary px-6 py-3 rounded-xl text-white text-sm font-semibold w-full">\u2705 Готово! Вернуться к курсу</button>';}
+  var hintBtn="";var deepBtn="";
+  if(!r||!r.success){
+    if(S.hintLevel<hints.length)hintBtn='<button onclick="showHint()" class="btn-hint px-4 py-2 rounded-lg text-xs font-semibold">\uD83D\uDCA1 Подсказка ('+S.hintLevel+'/'+hints.length+')</button>';
+    if(allHintsUsed && !S.deepHintShown)deepBtn='<button onclick="showDeepHint()" class="btn-deep px-4 py-2 rounded-lg text-xs font-semibold">\uD83D\uDD13 Показать ответ</button>';
   }
-
   return '<div class="min-h-screen hero-gradient pb-8">'+
     '<header class="glass-strong sticky top-0 z-50"><div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">'+
     '<button onclick="S.page=\'course\';S.pracRes=null;render()" class="text-gray-400 hover:text-white text-sm">\u2190 Назад</button>'+
@@ -673,96 +630,71 @@ function rDoPractice(){
     '<div class="glass-strong rounded-2xl p-6 slide-up">'+
     '<div class="flex items-center gap-3 mb-4"><div class="w-9 h-9 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-400">\u270D\uFE0F</div>'+
     '<h3 class="text-lg font-bold text-white">'+esc(p.title)+'</h3></div>'+
-    '<p class="text-white text-sm mb-4">'+esc(p.task)+'</p>'+
-    '<div class="mb-4"><label class="text-xs text-gray-400 mb-1 block">Пример:</label>'+
-    '<div class="code-editor px-3 py-2 rounded-lg text-sm whitespace-pre-wrap">'+esc(p.example)+'</div></div>'+
-    '<div class="mb-4"><label class="text-xs text-gray-400 mb-1 block">Ваш код:</label>'+
-    '<textarea id="pcode" rows="5" placeholder="Напишите скрипт..." class="w-full px-3 py-2 rounded-lg text-sm resize-none code-editor">'+(r?esc(r.code):"")+'</textarea></div>'+
-    rh+
-    '<div class="space-y-2">'+
-    '<button onclick="checkCode()" class="btn-primary px-5 py-3 rounded-lg text-white text-sm font-semibold w-full">\u2705 Проверить код</button>'+
-    nb+'</div></div></div></div>';
+    '<div class="task-desc mb-4"><p class="text-xs text-purple-300 mb-1">\uD83D\uDCCB Задание:</p>'+
+    '<p class="text-sm text-white leading-relaxed">'+esc(p.task)+'</p></div>'+
+    '<div class="mb-4"><div class="flex items-center justify-between mb-1">'+
+    '<label class="text-xs text-gray-400">\u270F\uFE0F Ваш код:</label>'+
+    '<button onclick="dismissKb()" class="btn-kb px-3 py-1 rounded-lg text-xs flex items-center gap-1">\u2328\uFE0F <span class="hidden sm:inline">Скрыть</span></button></div>'+
+    '<textarea id="pcode" rows="6" placeholder="Напишите скрипт здесь..." class="w-full px-3 py-2 rounded-lg text-sm resize-none code-editor">'+(r?esc(r.code):"")+'</textarea></div>'+
+    hintsHtml+deepHintHtml+rh+
+    '<div class="space-y-2"><div class="flex flex-wrap gap-2">'+
+    '<button onclick="checkCode()" class="btn-primary px-5 py-3 rounded-lg text-white text-sm font-semibold flex-1 min-w-[140px]">\u2705 Проверить</button>'+
+    hintBtn+deepBtn+'</div>'+nb+'</div></div></div></div>';
 }
 
+function showHint(){S.hintLevel++;render()}
+function showDeepHint(){S.deepHintShown=true;render()}
 function checkCode(){
-  var el=document.getElementById("pcode");
-  if(!el){alert("Ошибка");return}
-  var code=el.value.trim();
-  if(!code){alert("Напишите код!");return}
-  var course=getCourse(S.curCourse);
-  if(!course)return;
-  var p=null;
-  for(var i=0;i<(course.practices||[]).length;i++){if(course.practices[i].id===S.curPracId){p=course.practices[i];break}}
+  var el=document.getElementById("pcode");if(!el){alert("Ошибка");return}
+  var code=el.value.trim();if(!code){alert("Напишите код!");return}
+  var course=getCourse(S.curCourse);if(!course)return;
+  var p=null;for(var i=0;i<(course.practices||[]).length;i++){if(course.practices[i].id===S.curPracId){p=course.practices[i];break}}
   if(!p)return;
-  var result=checkLogic(code,p.example,p.keywords||[]);
-  S.pracRes={code:code,success:result.ok,detail:result.msg};
-  render();
+  var result=checkFullScript(code,p.solution);
+  S.pracRes={code:code,success:result.ok,detail:result.msg,diffLines:result.diffLines};render();
 }
-
+function checkFullScript(userCode,correctCode){
+  function normalize(code){return code.replace(/\r\n/g,'\n').replace(/[ \t]+$/gm,'').replace(/  +/g,' ').replace(/^\s+/gm,'').trim().toLowerCase()}
+  var nu=normalize(userCode);var nc=normalize(correctCode);
+  if(nu===nc)return{ok:true,msg:"Идеальное решение!",diffLines:[]};
+  var userLines=nu.split('\n').filter(function(l){return l.trim()});
+  var correctLines=nc.split('\n').filter(function(l){return l.trim()});
+  if(userLines.length===0)return{ok:false,msg:"Код пустой. Напишите хотя бы одну строку.",diffLines:[]};
+  var diffLines=[];var usedUserLines=[];var matchedCount=0;
+  for(var i=0;i<correctLines.length;i++){
+    var cLine=correctLines[i].trim();var found=false;
+    for(var j=0;j<userLines.length;j++){
+      if(usedUserLines.indexOf(j)!==-1)continue;
+      var uLine=userLines[j].trim();
+      var cTokens=cLine.replace(/["'(){};,=.]/g,' ').split(/\s+/).filter(function(t){return t.length>0});
+      var hasAll=true;for(var k=0;k<cTokens.length;k++){if(uLine.indexOf(cTokens[k])===-1){hasAll=false;break}}
+      if(hasAll){usedUserLines.push(j);matchedCount++;found=true;break}
+    }
+    if(!found)diffLines.push({type:'err',text:'\u26A0\uFE0F Не хватает: '+correctLines[i]});
+  }
+  for(var m=0;m<userLines.length;m++){if(usedUserLines.indexOf(m)===-1){diffLines.push({type:'err',text:'\u2753 Лишняя строка: '+userLines[m]})}}
+  if(matchedCount===correctLines.length && userLines.length===correctLines.length)return{ok:true,msg:"Все строки верны!",diffLines:[]};
+  if(matchedCount===correctLines.length)return{ok:true,msg:"Все нужные строки найдены!",diffLines:diffLines};
+  var ratio=correctLines.length>0?matchedCount/correctLines.length:0;
+  var msg='Найдено '+matchedCount+' из '+correctLines.length+' строк.';
+  if(ratio>=0.5)msg+=' Почти, проверьте ошибки ниже.';else msg+=' Попробуйте ещё раз.';
+  return{ok:false,msg:msg,diffLines:diffLines};
+}
 function finishPractice(){
-  var course=getCourse(S.curCourse);
-  if(!course)return;
+  var course=getCourse(S.curCourse);if(!course)return;
   var p=getCourseProgress(course.id);
   if(p.completedPractices.indexOf(S.curPracId)===-1)p.completedPractices.push(S.curPracId);
   S.progress[course.id]=p;
-  save();
-  S.page="course";
-  S.curPracId=null;
-  S.pracRes=null;
-  render();
-}
-
-function checkLogic(userCode,correctCode,keywords){
-  function norm(c){return c.replace(/[ \t]+$/gm,"").replace(/\n{3,}/g,"\n\n").trim().toLowerCase()}
-  var nu=norm(userCode);
-  var nc=norm(correctCode);
-  if(nu===nc)return{ok:true,msg:"Идеальное решение!"};
-  var ul=nu.split("\n").filter(function(l){return l.trim()});
-  var cl=nc.split("\n").filter(function(l){return l.trim()});
-  var af=true;
-  for(var i=0;i<cl.length;i++){
-    var found=false;
-    for(var j=0;j<ul.length;j++){if(ul[j].trim()===cl[i].trim()){found=true;break}}
-    if(!found){af=false;break}
-  }
-  if(af)return{ok:true,msg:"Все строки найдены!"};
-  if(keywords.length>0){
-    var fk=[];var mk=[];
-    for(var k=0;k<keywords.length;k++){
-      var kw=keywords[k].toLowerCase().trim();
-      if(kw&&nu.indexOf(kw)!==-1)fk.push(kw);else mk.push(kw);
-    }
-    if(mk.length===0)return{ok:true,msg:"Все ключевые слова найдены!"};
-    if(fk.length>0&&mk.length<=Math.floor(keywords.length/2))
-      return{ok:false,msg:"Почти! Найдены: "+fk.join(", ")+". Отсутствуют: "+mk.join(", ")};
-    return{ok:false,msg:"Не хватает: "+mk.join(", ")};
-  }
-  var mc=0;
-  for(var m=0;m<cl.length;m++){
-    for(var n=0;n<ul.length;n++){if(ul[n].indexOf(cl[m].trim())!==-1||cl[m].trim().indexOf(ul[n].trim())!==-1){mc++;break}}
-  }
-  var ratio=cl.length>0?mc/cl.length:0;
-  if(ratio>=0.8)return{ok:true,msg:"Хорошо!"};
-  return{ok:false,msg:"Совпадение: "+Math.round(ratio*100)+"%"};
+  tryUnlockNextCourse(course.id);
+  save();S.page="course";S.curPracId=null;S.pracRes=null;S.hintLevel=0;S.deepHintShown=false;render();
 }
 
 function rComplete(){
-  var course=getCourse(S.curCourse);
-  if(!course)return "";
+  var course=getCourse(S.curCourse);if(!course)return "";
   var next=null;
-  for(var j=0;j<S.courses.length;j++){
-    if(S.courses[j].id===course.id){
-      if(j+1<S.courses.length && S.courses[j+1].locked){
-        next=S.courses[j+1];
-      }
-      break;
-    }
-  }
+  for(var j=0;j<S.courses.length;j++){if(S.courses[j].id===course.id){if(j+1<S.courses.length&&S.courses[j+1].locked){next=S.courses[j+1]}break}}
   var nh="",nb="";
-  if(next){
-    nh='<div class="glass rounded-xl p-3 mb-5 border-amber-500/30"><p class="text-xs text-amber-400 mb-1">\uD83D\uDD13 Новый курс разблокирован!</p><p class="text-white font-semibold text-sm">'+next.icon+' '+esc(next.title)+'</p></div>';
-    nb='<button onclick="goCourse('+next.id+')" class="btn-secondary px-5 py-2 rounded-lg text-amber-400 text-sm" style="border-color:rgba(245,158,11,.3)">Начать '+esc(next.title)+'</button>';
-  }
+  if(next){nh='<div class="glass rounded-xl p-3 mb-5 border-amber-500/30"><p class="text-xs text-amber-400 mb-1">\uD83D\uDD13 Новый курс разблокирован!</p><p class="text-white font-semibold text-sm">'+next.icon+' '+esc(next.title)+'</p></div>';nb='<button onclick="goCourse('+next.id+')" class="btn-secondary px-5 py-2 rounded-lg text-amber-400 text-sm" style="border-color:rgba(245,158,11,.3)">Начать '+esc(next.title)+'</button>';}
   return '<div class="min-h-screen hero-gradient flex items-center justify-center">'+
     '<div class="max-w-md mx-auto px-4 text-center">'+
     '<div class="glass-strong rounded-3xl p-8 slide-up" style="animation:celebrate .6s ease">'+
@@ -781,55 +713,30 @@ function rComplete(){
 function initParticles(){
   var canvases=document.querySelectorAll(".particle-canvas");
   for(var c=0;c<canvases.length;c++){
-    (function(cv){
-      if(cv._p)return;cv._p=true;
-      var st=cv.getAttribute("data-status");
-      var cl=cv.getAttribute("data-color");
-      var ctx=cv.getContext("2d");
-      function rsz(){var r=cv.parentElement.getBoundingClientRect();cv.width=r.width;cv.height=r.height}
-      rsz();
-      var pts=[];var n=st==="active"?12:(st==="done"?6:3);
-      for(var i=0;i<n;i++)pts.push({x:Math.random()*150,y:Math.random()*40,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,sz:Math.random()*1.5+.5,al:Math.random()*.4+.1});
-      (function anim(){
-        ctx.clearRect(0,0,cv.width,cv.height);rsz();
-        for(var i=0;i<pts.length;i++){
-          var p=pts[i];p.x+=p.vx;p.y+=p.vy;
-          if(p.x<0||p.x>cv.width)p.vx*=-1;
-          if(p.y<0||p.y>cv.height)p.vy*=-1;
-          ctx.beginPath();ctx.arc(p.x,p.y,p.sz,0,Math.PI*2);
-          ctx.fillStyle=cl+Math.round(p.al*255).toString(16).padStart(2,"0");ctx.fill();
-        }
-        requestAnimationFrame(anim);
-      })();
-    })(canvases[c]);
+    (function(cv){if(cv._p)return;cv._p=true;var st=cv.getAttribute("data-status");var cl=cv.getAttribute("data-color");var ctx=cv.getContext("2d");
+    function rsz(){var r=cv.parentElement.getBoundingClientRect();cv.width=r.width;cv.height=r.height}rsz();
+    var pts=[];var n=st==="active"?12:(st==="done"?6:3);
+    for(var i=0;i<n;i++)pts.push({x:Math.random()*150,y:Math.random()*40,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,sz:Math.random()*1.5+.5,al:Math.random()*.4+.1});
+    (function anim(){ctx.clearRect(0,0,cv.width,cv.height);rsz();for(var i=0;i<pts.length;i++){var p=pts[i];p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>cv.width)p.vx*=-1;if(p.y<0||p.y>cv.height)p.vy*=-1;ctx.beginPath();ctx.arc(p.x,p.y,p.sz,0,Math.PI*2);ctx.fillStyle=cl+Math.round(p.al*255).toString(16).padStart(2,"0");ctx.fill()}requestAnimationFrame(anim)})();})(canvases[c]);
   }
 }
-
 function launchFW(){
-  var cv=document.getElementById("fw-canvas");if(!cv)return;
-  var ctx=cv.getContext("2d");cv.width=window.innerWidth;cv.height=window.innerHeight;
-  var fws=[],sps=[];
-  var cls=["#6c5ce7","#a855f7","#ec4899","#f59e0b","#10b981","#3b82f6","#ef4444"];
+  var cv=document.getElementById("fw-canvas");if(!cv)return;var ctx=cv.getContext("2d");cv.width=window.innerWidth;cv.height=window.innerHeight;
+  var fws=[],sps=[],cls=["#6c5ce7","#a855f7","#ec4899","#f59e0b","#10b981","#3b82f6","#ef4444"];
   function mkF(){var x=Math.random()*cv.width;var ty=Math.random()*cv.height*.4+50;fws.push({x:x,y:cv.height,ty:ty,vy:-7-Math.random()*4,cl:cls[Math.floor(Math.random()*cls.length)],ex:false})}
   function exp(x,y,cl){for(var i=0;i<50;i++){var a=(Math.PI*2/50)*i+Math.random()*.2;var sp=2+Math.random()*3;sps.push({x:x,y:y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,cl:cl,life:1,dc:.015+Math.random()*.015,sz:2+Math.random()*2})}}
-  var fr=0;
-  (function anim(){
-    if(fr>200){ctx.clearRect(0,0,cv.width,cv.height);return}fr++;
-    ctx.fillStyle="rgba(10,10,15,.2)";ctx.fillRect(0,0,cv.width,cv.height);
-    if(fr%25===0)mkF();
-    for(var i=0;i<fws.length;i++){var f=fws[i];if(!f.ex){f.y+=f.vy;f.vy+=.1;ctx.beginPath();ctx.arc(f.x,f.y,3,0,Math.PI*2);ctx.fillStyle=f.cl;ctx.fill();if(f.y<=f.ty||f.vy>0){f.ex=true;exp(f.x,f.y,f.cl)}}}
-    for(var j=0;j<sps.length;j++){var s=sps[j];s.x+=s.vx;s.y+=s.vy;s.vy+=.05;s.life-=s.dc;if(s.life>0){ctx.beginPath();ctx.arc(s.x,s.y,s.sz*s.life,0,Math.PI*2);ctx.fillStyle=s.cl+Math.round(s.life*255).toString(16).padStart(2,"0");ctx.fill()}}
-    requestAnimationFrame(anim);
-  })();
+  var fr=0;(function anim(){if(fr>200){ctx.clearRect(0,0,cv.width,cv.height);return}fr++;ctx.fillStyle="rgba(10,10,15,.2)";ctx.fillRect(0,0,cv.width,cv.height);
+  if(fr%25===0)mkF();for(var i=0;i<fws.length;i++){var f=fws[i];if(!f.ex){f.y+=f.vy;f.vy+=.1;ctx.beginPath();ctx.arc(f.x,f.y,3,0,Math.PI*2);ctx.fillStyle=f.cl;ctx.fill();if(f.y<=f.ty||f.vy>0){f.ex=true;exp(f.x,f.y,f.cl)}}}
+  for(var j=0;j<sps.length;j++){var s=sps[j];s.x+=s.vx;s.y+=s.vy;s.vy+=.05;s.life-=s.dc;if(s.life>0){ctx.beginPath();ctx.arc(s.x,s.y,s.sz*s.life,0,Math.PI*2);ctx.fillStyle=s.cl+Math.round(s.life*255).toString(16).padStart(2,"0");ctx.fill()}}
+  requestAnimationFrame(anim)})();
 }
-
-load();
-defaults();
-render();
+load();defaults();render();
 window.addEventListener("resize",function(){var f=document.getElementById("fw-canvas");if(f){f.width=window.innerWidth;f.height=window.innerHeight}});
 </script>
 </body>
 </html>
+
+
 
 
 
